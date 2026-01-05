@@ -1,0 +1,58 @@
+# =========================
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# =========================
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# =========================
+# Django
+*.sqlite3
+staticfiles/
+media/
+local_settings.py
+
+# =========================
+# Logs
+*.log
+logs/
+
+# =========================
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# =========================
+# Coverage / Testing
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+
+# =========================
+# Docker
+*.pid
+
+# =========================
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# =========================
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# =========================
+# Secrets / Keys
+*.pem
+*.key

@@ -1,0 +1,31 @@
+.import-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 500px;
+  margin: 1rem auto;
+}
+
+.import-input {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+}
+
+.import-button {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.import-button:hover {
+  background-color: #2563eb;
+}
+
+.import-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+}
