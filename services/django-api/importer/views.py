@@ -13,30 +13,41 @@ from .redis_limit import check_rate_limit
 
 
 class GoogleDriveImportView(APIView):
+    """
+    Start a Google Drive import job.
+    """
+
     def post(self, request):
         try:
             payload = GoogleDriveImportRequest(**request.data)
         except Exception as exc:
-            return Response({"error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": str(exc)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         folder_url = str(payload.url)
-        folder_id = folder_url.rstrip("/").split("/")[-1]
 
-        if not check_rate_limit(folder_id):
+        # Rate limit check (by URL, not ID)
+        if not check_rate_limit(folder_url):
             return Response(
                 {"error": "Rate limit exceeded for this folder"},
                 status=status.HTTP_429_TOO_MANY_REQUESTS,
             )
 
         job = ImportJob.objects.create(
-            source_url=str(payload.url),
+            source_url=folder_url,
             status="queued",
         )
 
-        process_google_drive_folder.delay(job.id, folder_id)
+        # ✅ IMPORTANT: pass FULL URL to Celery
+        process_google_drive_folder.delay(job.id, folder_url)
 
         return Response(
-            {"job_id": job.id, "status": job.status},
+            {
+                "job_id": job.id,
+                "status": job.status,
+            },
             status=status.HTTP_202_ACCEPTED,
         )
 
@@ -46,7 +57,10 @@ class JobStatusView(APIView):
         try:
             job = ImportJob.objects.get(id=job_id)
         except ImportJob.DoesNotExist:
-            return Response({"error": "Job not found"}, status=404)
+            return Response(
+                {"error": "Job not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         return Response(
             {
@@ -77,10 +91,15 @@ class HealthCheckView(APIView):
             with connections["default"].cursor() as cursor:
                 cursor.execute("SELECT 1;")
         except Exception:
-            return Response({"status": "db_error"}, status=500)
+            return Response(
+                {"status": "db_error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return Response({"status": "ok"})
 
 
 def home(request):
-    return JsonResponse({"message": "Welcome to Scalable Image Importer API"})
+    return JsonResponse(
+        {"message": "Welcome to Scalable Image Importer API"}
+    )
