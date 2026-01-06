@@ -3,13 +3,13 @@ from googleapiclient.http import MediaIoBaseDownload
 from io import BytesIO
 import os
 
-API_KEY = os.getenv("GOOGLE_DRIVE_API_KEY")
-if not API_KEY:
-    raise RuntimeError("GOOGLE_DRIVE_API_KEY not set")
-
 
 def get_drive_service():
-    return build("drive", "v3", developerKey=API_KEY)
+    api_key = os.getenv("GOOGLE_DRIVE_API_KEY")
+    if not api_key:
+        raise RuntimeError("GOOGLE_DRIVE_API_KEY not set")
+
+    return build("drive", "v3", developerKey=api_key)
 
 
 def list_files_in_folder(folder_id):
